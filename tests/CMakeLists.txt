@@ -112,7 +112,11 @@ add_test(NAME advisor_scripts COMMAND python3 ${PROJECT_SOURCE_DIR}/advisors/tes
 set_tests_properties(advisor_scripts PROPERTIES LABELS "python;integration" TIMEOUT 120)
 
 # The viewer's stall latch and its drawing (issue #8), under Node without a browser; skipped where node is missing or too old to strip types (22.6+).
-add_test(NAME viewer_stall COMMAND sh -c "node --experimental-strip-types -e 0 >/dev/null 2>&1 || exit 77; cd '${PROJECT_SOURCE_DIR}/viewer' && node --experimental-strip-types --no-warnings --test src/stall.test.ts src/stall_draw.test.ts src/returnpath_draw.test.ts src/footprintcheck_draw.test.ts")
+# Node's test runner, or Bun's where `node` is missing or is a shim for Bun (which only runs node:test files under `bun test`).
+set(TM_VIEWER_TESTS "src/stall.test.ts src/stall_draw.test.ts src/returnpath_draw.test.ts src/footprintcheck_draw.test.ts")
+add_test(NAME viewer_stall COMMAND sh -c "cd '${PROJECT_SOURCE_DIR}/viewer' || exit 1; \
+if node --experimental-strip-types -e 'process.exit(process.versions.bun ? 1 : 0)' >/dev/null 2>&1; then exec node --experimental-strip-types --no-warnings --test ${TM_VIEWER_TESTS}; \
+elif command -v bun >/dev/null; then exec bun test ${TM_VIEWER_TESTS}; else exit 77; fi")
 set_tests_properties(viewer_stall PROPERTIES SKIP_RETURN_CODE 77 LABELS "viewer;integration" TIMEOUT 120)
 
 # The reference-return audit (issue #7) through the command line; the board part needs the KiCad demo fixtures and skips without them.

@@ -198,7 +198,7 @@ Server behaviour:
   measures nothing. The side panel lists the stalled connections with their verdict chips; `[` and `]` (or a click on the list, or on copper of one of those
   nets) move between them. Space, Escape or the Resume button releases the scene and re-arms the latch.
 - **Control channel.** Still only this dismiss button, and it changes nothing in routing (§2).
-- **Tested.** `viewer/src/stall.test.ts` and `stall_draw.test.ts` (Node, no browser: the latch, the held messages, the label text, the drawing against a recording
+- **Tested.** `viewer/src/stall.test.ts` and `stall_draw.test.ts` (Node, or `bun test` where `node` is missing or runs Bun (D125); no browser: the latch, the held messages, the label text, the drawing against a recording
   context); ctest `viewer_stall`; and by hand in headless Chromium against a live router (`bench/records/issue8/`).
 
 ### Return-path overlay (issue #7, D114)
